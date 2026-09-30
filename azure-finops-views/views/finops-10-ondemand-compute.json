@@ -1,0 +1,73 @@
+{
+  "properties": {
+    "displayName": "FinOps 10 \u00b7 On-demand compute \u2013 commitment candidates (MTD)",
+    "chart": "Table",
+    "metric": "AmortizedCost",
+    "accumulated": "false",
+    "kpis": [],
+    "pivots": [
+      {
+        "type": "Dimension",
+        "name": "ResourceLocation"
+      },
+      {
+        "type": "Dimension",
+        "name": "SubscriptionName"
+      },
+      {
+        "type": "Dimension",
+        "name": "ResourceGroupName"
+      }
+    ],
+    "query": {
+      "type": "Usage",
+      "timeframe": "MonthToDate",
+      "dataSet": {
+        "granularity": "Monthly",
+        "aggregation": {
+          "totalCost": {
+            "name": "Cost",
+            "function": "Sum"
+          }
+        },
+        "grouping": [
+          {
+            "type": "Dimension",
+            "name": "MeterSubcategory"
+          }
+        ],
+        "sorting": [
+          {
+            "name": "Cost",
+            "direction": "Descending"
+          }
+        ],
+        "filter": {
+          "and": [
+            {
+              "dimensions": {
+                "name": "PricingModel",
+                "operator": "In",
+                "values": [
+                  "OnDemand"
+                ]
+              }
+            },
+            {
+              "dimensions": {
+                "name": "MeterCategory",
+                "operator": "In",
+                "values": [
+                  "Virtual Machines",
+                  "Azure App Service",
+                  "SQL Database",
+                  "Azure Cosmos DB"
+                ]
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}

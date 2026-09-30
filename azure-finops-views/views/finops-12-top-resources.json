@@ -1,0 +1,48 @@
+{
+  "properties": {
+    "displayName": "FinOps 12 \u00b7 Top resources by cost (MTD)",
+    "chart": "Table",
+    "metric": "AmortizedCost",
+    "accumulated": "false",
+    "kpis": [],
+    "pivots": [
+      {
+        "type": "Dimension",
+        "name": "ResourceType"
+      },
+      {
+        "type": "Dimension",
+        "name": "ResourceGroupName"
+      },
+      {
+        "type": "Dimension",
+        "name": "ServiceName"
+      }
+    ],
+    "query": {
+      "type": "Usage",
+      "timeframe": "MonthToDate",
+      "dataSet": {
+        "granularity": "Monthly",
+        "aggregation": {
+          "totalCost": {
+            "name": "Cost",
+            "function": "Sum"
+          }
+        },
+        "grouping": [
+          {
+            "type": "Dimension",
+            "name": "ResourceId"
+          }
+        ],
+        "sorting": [
+          {
+            "name": "Cost",
+            "direction": "Descending"
+          }
+        ]
+      }
+    }
+  }
+}

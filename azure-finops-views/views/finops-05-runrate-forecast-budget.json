@@ -1,0 +1,54 @@
+{
+  "properties": {
+    "displayName": "FinOps 05 \u00b7 Run-rate vs forecast & budget (MTD)",
+    "chart": "Area",
+    "metric": "ActualCost",
+    "accumulated": "true",
+    "kpis": [
+      {
+        "type": "Forecast",
+        "enabled": true,
+        "id": null
+      },
+      {
+        "type": "Budget",
+        "enabled": true,
+        "id": "__BUDGET_ID__"
+      }
+    ],
+    "pivots": [
+      {
+        "type": "Dimension",
+        "name": "ServiceName"
+      },
+      {
+        "type": "Dimension",
+        "name": "ResourceGroupName"
+      },
+      {
+        "type": "Dimension",
+        "name": "ResourceLocation"
+      }
+    ],
+    "query": {
+      "type": "Usage",
+      "timeframe": "MonthToDate",
+      "dataSet": {
+        "granularity": "Daily",
+        "aggregation": {
+          "totalCost": {
+            "name": "Cost",
+            "function": "Sum"
+          }
+        },
+        "grouping": [],
+        "sorting": [
+          {
+            "name": "UsageDate",
+            "direction": "Ascending"
+          }
+        ]
+      }
+    }
+  }
+}

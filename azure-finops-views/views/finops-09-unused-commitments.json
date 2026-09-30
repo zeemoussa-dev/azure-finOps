@@ -1,0 +1,58 @@
+{
+  "properties": {
+    "displayName": "FinOps 09 \u00b7 Unused reservations & savings plans (MTD)",
+    "chart": "StackedColumn",
+    "metric": "AmortizedCost",
+    "accumulated": "false",
+    "kpis": [],
+    "pivots": [
+      {
+        "type": "Dimension",
+        "name": "BenefitName"
+      },
+      {
+        "type": "Dimension",
+        "name": "ReservationName"
+      },
+      {
+        "type": "Dimension",
+        "name": "ResourceLocation"
+      }
+    ],
+    "query": {
+      "type": "Usage",
+      "timeframe": "MonthToDate",
+      "dataSet": {
+        "granularity": "Daily",
+        "aggregation": {
+          "totalCost": {
+            "name": "Cost",
+            "function": "Sum"
+          }
+        },
+        "grouping": [
+          {
+            "type": "Dimension",
+            "name": "ChargeType"
+          }
+        ],
+        "sorting": [
+          {
+            "name": "UsageDate",
+            "direction": "Ascending"
+          }
+        ],
+        "filter": {
+          "dimensions": {
+            "name": "ChargeType",
+            "operator": "In",
+            "values": [
+              "UnusedReservation",
+              "UnusedSavingsPlan"
+            ]
+          }
+        }
+      }
+    }
+  }
+}

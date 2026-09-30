@@ -1,0 +1,48 @@
+{
+  "properties": {
+    "displayName": "FinOps 02 \u00b7 Cost by application (YTD monthly)",
+    "chart": "Table",
+    "metric": "AmortizedCost",
+    "accumulated": "false",
+    "kpis": [],
+    "pivots": [
+      {
+        "type": "TagKey",
+        "name": "__ENV_TAG__"
+      },
+      {
+        "type": "TagKey",
+        "name": "__COSTCENTER_TAG__"
+      },
+      {
+        "type": "Dimension",
+        "name": "ServiceName"
+      }
+    ],
+    "query": {
+      "type": "Usage",
+      "timeframe": "YearToDate",
+      "dataSet": {
+        "granularity": "Monthly",
+        "aggregation": {
+          "totalCost": {
+            "name": "Cost",
+            "function": "Sum"
+          }
+        },
+        "grouping": [
+          {
+            "type": "TagKey",
+            "name": "__APP_TAG__"
+          }
+        ],
+        "sorting": [
+          {
+            "name": "UsageDate",
+            "direction": "Ascending"
+          }
+        ]
+      }
+    }
+  }
+}

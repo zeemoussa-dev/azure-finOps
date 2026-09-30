@@ -1,0 +1,48 @@
+{
+  "properties": {
+    "displayName": "FinOps 11 \u00b7 Tagging gaps \u2013 spend by cost-center tag (MTD)",
+    "chart": "Table",
+    "metric": "AmortizedCost",
+    "accumulated": "false",
+    "kpis": [],
+    "pivots": [
+      {
+        "type": "Dimension",
+        "name": "SubscriptionName"
+      },
+      {
+        "type": "Dimension",
+        "name": "ResourceGroupName"
+      },
+      {
+        "type": "Dimension",
+        "name": "ResourceType"
+      }
+    ],
+    "query": {
+      "type": "Usage",
+      "timeframe": "MonthToDate",
+      "dataSet": {
+        "granularity": "Monthly",
+        "aggregation": {
+          "totalCost": {
+            "name": "Cost",
+            "function": "Sum"
+          }
+        },
+        "grouping": [
+          {
+            "type": "TagKey",
+            "name": "__COSTCENTER_TAG__"
+          }
+        ],
+        "sorting": [
+          {
+            "name": "Cost",
+            "direction": "Descending"
+          }
+        ]
+      }
+    }
+  }
+}

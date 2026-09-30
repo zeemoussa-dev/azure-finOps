@@ -1,0 +1,85 @@
+// =====================================================================
+// FinOps · Waste & optimisation – Azure Resource Graph queries
+// Cost Management views can't see *idle* resources, only what they cost.
+// Run these in Resource Graph Explorer (portal) or:
+//   az graph query -q "<query>" --management-groups <mgId> --first 1000
+// Pin any of them to a dashboard or wrap them in an Azure Workbook.
+// =====================================================================
+
+// 1. Unattached managed disks (still billed)
+resources
+| where type =~ 'microsoft.compute/disks'
+| where properties.diskState =~ 'Unattached'
+| project name, resourceGroup, subscriptionId, location,
+          sku = tostring(sku.name), sizeGB = toint(properties.diskSizeGB),
+          createdOn = todatetime(properties.timeCreated), tags
+| order by sizeGB desc
+
+// 2. Public IPs not associated to anything (Standard SKU is billed)
+resources
+| where type =~ 'microsoft.network/publicipaddresses'
+| where isnull(properties.ipConfiguration) and isnull(properties.natGateway)
+| project name, resourceGroup, subscriptionId, location, sku = tostring(sku.name), tags
+
+// 3. Deallocated / stopped VMs (disks still billed; review for deletion)
+resources
+| where type =~ 'microsoft.compute/virtualmachines'
+| extend power = tostring(properties.extended.instanceView.powerState.code)
+| where power in~ ('PowerState/deallocated', 'PowerState/stopped')
+| project name, resourceGroup, subscriptionId, location, power,
+          size = tostring(properties.hardwareProfile.vmSize), tags
+
+// 4. Orphaned NICs
+resources
+| where type =~ 'microsoft.network/networkinterfaces'
+| where isnull(properties.virtualMachine) and isnull(properties.privateEndpoint)
+| project name, resourceGroup, subscriptionId, location, tags
+
+// 5. App Service plans with no apps
+resources
+| where type =~ 'microsoft.web/serverfarms'
+| where toint(properties.numberOfSites) == 0
+| project name, resourceGroup, subscriptionId, location,
+          sku = tostring(sku.name), tier = tostring(sku.tier), tags
+
+// 6. Load balancers with empty backend pools
+resources
+| where type =~ 'microsoft.network/loadbalancers'
+| where array_length(properties.backendAddressPools) == 0
+| project name, resourceGroup, subscriptionId, location, sku = tostring(sku.name), tags
+
+// 7. Old snapshots (> 90 days)
+resources
+| where type =~ 'microsoft.compute/snapshots'
+| extend created = todatetime(properties.timeCreated)
+| where created < ago(90d)
+| project name, resourceGroup, subscriptionId, created,
+          sizeGB = toint(properties.diskSizeGB), tags
+| order by created asc
+
+// 8. Resources missing the cost-center tag (change 'CostCenter' to your key)
+resources
+| where isnull(tags['CostCenter']) or tostring(tags['CostCenter']) == ''
+| summarize count() by type, subscriptionId
+| order by count_ desc
+
+// 9. Azure Advisor cost recommendations with estimated savings
+advisorresources
+| where type =~ 'microsoft.advisor/recommendations'
+| where properties.category =~ 'Cost'
+| extend problem   = tostring(properties.shortDescription.problem),
+         resource  = tostring(properties.resourceMetadata.resourceId),
+         savings   = todouble(properties.extendedProperties.savingsAmount),
+         currency  = tostring(properties.extendedProperties.savingsCurrency),
+         impact    = tostring(properties.impact)
+| project problem, impact, savings, currency, resource, subscriptionId
+| order by savings desc
+
+// 10. Advisor savings rolled up by recommendation type
+advisorresources
+| where type =~ 'microsoft.advisor/recommendations'
+| where properties.category =~ 'Cost'
+| summarize annualSavings = sum(todouble(properties.extendedProperties.annualSavingsAmount)),
+            items = count()
+  by problem = tostring(properties.shortDescription.problem)
+| order by annualSavings desc

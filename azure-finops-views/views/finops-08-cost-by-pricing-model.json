@@ -1,0 +1,48 @@
+{
+  "properties": {
+    "displayName": "FinOps 08 \u00b7 Commitment coverage \u2013 cost by pricing model (MTD)",
+    "chart": "StackedColumn",
+    "metric": "AmortizedCost",
+    "accumulated": "false",
+    "kpis": [],
+    "pivots": [
+      {
+        "type": "Dimension",
+        "name": "MeterCategory"
+      },
+      {
+        "type": "Dimension",
+        "name": "SubscriptionName"
+      },
+      {
+        "type": "Dimension",
+        "name": "BenefitName"
+      }
+    ],
+    "query": {
+      "type": "Usage",
+      "timeframe": "MonthToDate",
+      "dataSet": {
+        "granularity": "Daily",
+        "aggregation": {
+          "totalCost": {
+            "name": "Cost",
+            "function": "Sum"
+          }
+        },
+        "grouping": [
+          {
+            "type": "Dimension",
+            "name": "PricingModel"
+          }
+        ],
+        "sorting": [
+          {
+            "name": "UsageDate",
+            "direction": "Ascending"
+          }
+        ]
+      }
+    }
+  }
+}

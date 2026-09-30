@@ -1,0 +1,48 @@
+{
+  "properties": {
+    "displayName": "FinOps 07 \u00b7 Monthly trend by service (YTD)",
+    "chart": "StackedColumn",
+    "metric": "AmortizedCost",
+    "accumulated": "false",
+    "kpis": [],
+    "pivots": [
+      {
+        "type": "Dimension",
+        "name": "SubscriptionName"
+      },
+      {
+        "type": "Dimension",
+        "name": "ResourceLocation"
+      },
+      {
+        "type": "TagKey",
+        "name": "__COSTCENTER_TAG__"
+      }
+    ],
+    "query": {
+      "type": "Usage",
+      "timeframe": "YearToDate",
+      "dataSet": {
+        "granularity": "Monthly",
+        "aggregation": {
+          "totalCost": {
+            "name": "Cost",
+            "function": "Sum"
+          }
+        },
+        "grouping": [
+          {
+            "type": "Dimension",
+            "name": "ServiceName"
+          }
+        ],
+        "sorting": [
+          {
+            "name": "UsageDate",
+            "direction": "Ascending"
+          }
+        ]
+      }
+    }
+  }
+}

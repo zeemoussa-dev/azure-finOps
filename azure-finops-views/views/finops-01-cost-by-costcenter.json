@@ -1,0 +1,59 @@
+{
+  "properties": {
+    "displayName": "FinOps 01 \u00b7 Showback by cost center (MTD)",
+    "chart": "StackedColumn",
+    "metric": "AmortizedCost",
+    "accumulated": "false",
+    "kpis": [
+      {
+        "type": "Forecast",
+        "enabled": true,
+        "id": null
+      },
+      {
+        "type": "Budget",
+        "enabled": true,
+        "id": "__BUDGET_ID__"
+      }
+    ],
+    "pivots": [
+      {
+        "type": "TagKey",
+        "name": "__APP_TAG__"
+      },
+      {
+        "type": "TagKey",
+        "name": "__ENV_TAG__"
+      },
+      {
+        "type": "Dimension",
+        "name": "SubscriptionName"
+      }
+    ],
+    "query": {
+      "type": "Usage",
+      "timeframe": "MonthToDate",
+      "dataSet": {
+        "granularity": "Daily",
+        "aggregation": {
+          "totalCost": {
+            "name": "Cost",
+            "function": "Sum"
+          }
+        },
+        "grouping": [
+          {
+            "type": "TagKey",
+            "name": "__COSTCENTER_TAG__"
+          }
+        ],
+        "sorting": [
+          {
+            "name": "UsageDate",
+            "direction": "Ascending"
+          }
+        ]
+      }
+    }
+  }
+}
